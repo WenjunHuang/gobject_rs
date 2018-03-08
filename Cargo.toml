@@ -1,0 +1,10 @@
+[package]
+name = "gobject-rs"
+version = "0.1.0"
+authors = ["黄文俊 <huangwj@goldlokedu.cn>"]
+
+[dependencies]
+glib-sys="*"
+glib="*"
+gobject-sys="*"
+gtk-sys="*"
