@@ -61,7 +61,11 @@ impl FooClass{
 
         {
             let gobject_klass = &mut *(klass as *mut gobject_ffi::GObjectClass);
+
+            // 析构函数
             gobject_klass.finalize = Some(Foo::finalize);
+
+            // 属性
             gobject_klass.set_property = Some(Foo::set_property);
             gobject_klass.get_property = Some(Foo::get_property);
 
@@ -235,6 +239,26 @@ impl Foo {
     }
 
 }
+
+// Virtual method callers
+#[no_mangle]
+pub unsafe extern "C" fn ex_foo_increment(this:*mut Foo,inc:i32) -> i32 {
+    let klass = (*this).get_class();
+    (klass.increment.as_ref().unwrap())(this,inc)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn ex_foo_get_counter(this:*mut Foo) -> i32 {
+    let private = (*this).get_priv();
+    Foo::get_counter(&from_glib_borrow(this),private)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn ex_foo_get_name(this: *mut Foo) -> *mut c_char {
+    let private = (*this).get_priv();
+    Foo::get_name(&from_glib_borrow(this),private).to_glib_full()
+}
+
 
 // GObject glue
 #[no_mangle]
